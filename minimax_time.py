@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as pl
 from matplotlib import patches
-from scipy.optimize import curve_fit
+from scipy.optimize import curve_fit, fsolve
 from scipy.signal import argrelextrema
 from numpy import dot, outer
 
@@ -23,31 +23,22 @@ def main():
 
     alphas_betas_L2_opt, alphas_betas_conv = curve_fit(eta, xdata, ydata, p0=alphas_betas_init)
 
+    alpha_beta_E = np.append(alphas_betas_L2_opt, abs(eta_plotting(xdata[0],alphas_betas_L2_opt)))
+
     i = 0
     while i < 1:
 
-        max_x = xdata[argrelextrema(eta_plotting(xdata,alphas_betas_L2_opt), np.greater)[0]]
-        min_x = xdata[argrelextrema(eta_plotting(xdata,alphas_betas_L2_opt), np.less)[0]]
+        extrema_x = np.append(xdata[0], xdata[argrelextrema(eta_plotting(xdata,alphas_betas_L2_opt), np.greater)[0]])
+        extrema_x = np.append(extrema_x, xdata[argrelextrema(eta_plotting(xdata,alphas_betas_L2_opt), np.less)[0]])
 
-        if eta_plotting(xdata[0],alphas_betas_L2_opt) > 0:
-            max_x = np.append(xdata[0], max_x)
-        else:
-            min_x = np.append(xdata[0], min_x)
+#        alphas_betas_E = fsolve(eta_for_alphas_betas_E_update, args=extrema_x)
 
         i += 1
-
-
-    print ("maxm =", max_x)
-    print ("eta_plotting(max_x,alphas_betas_L2_opt) =", eta_plotting(max_x,alphas_betas_L2_opt))
-    print ("minm =", min_x)
-    print ("eta_plotting(min_x,alphas_betas_L2_opt) =", eta_plotting(min_x,alphas_betas_L2_opt))
-
 
     fig1, (axis1) = pl.subplots(1,1)
     axis1.set_xlim((1,R_minimax))
     axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_L2_opt))
-    axis1.semilogx(max_x, eta_plotting(max_x,alphas_betas_L2_opt), "x")
-    axis1.semilogx(min_x, eta_plotting(min_x,alphas_betas_L2_opt), "x")
+    axis1.semilogx(extrema_x, eta_plotting(extrema_x,alphas_betas_L2_opt), "x")
 
     pl.show()
 
@@ -59,6 +50,9 @@ def eta(x, *params):
 def eta_plotting(x, *params):
     params_1d = np.transpose(params)[:,0]
     return 1/(2*x) - (np.exp(-outer(x,params_1d[0:np.size(params)//2]))).dot(params_1d[np.size(params)//2:])
+
+def eta_for_alphas_betas_E_update(x, *params):
+    return 1/(2*params) - (np.exp(-outer(params,x[0:np.size(x)//2]))).dot(x[np.size(x)//2:])
 
 if __name__ == "__main__":
     main()

@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as pl
 from matplotlib import patches
 from scipy.optimize import curve_fit
+from scipy.signal import argrelextrema
 
 def main():
     
@@ -18,98 +19,72 @@ def main():
     ydata = np.zeros(n_x)
 
     alphas_betas_init = np.logspace(-3,-2,2*n_minimax)
-#    alphas_betas_init = np.ones(2*n_minimax)
 
-    print("xdata", xdata)
+    alphas_betas_L2_opt, alphas_betas_conv = curve_fit(eta, xdata, ydata, p0=alphas_betas_init)
 
-    alphas_betas_opt, alphas_betas_conv = curve_fit(eta, xdata, ydata, p0=alphas_betas_init)
+    i = 0
+    while i < 10:
 
-    print("alphas_betas_opt =", alphas_betas_opt)
+#        maxm = argrelextrema(y, np.greater)
+#        minm = argrelextrema(y, np.less)
+        i += 1
+
+
+
+    print("alphas_betas_L2_opt =", alphas_betas_L2_opt)
 
     fig1, (axis1) = pl.subplots(1,1)
     axis1.set_xlim((1,R_minimax))
     axis1.set_ylim((10e-15,1))
-    axis1.loglog(xdata,np.abs(eta(xdata,
-        alphas_betas_opt[0],
-        alphas_betas_opt[1],
-        alphas_betas_opt[2],
-        alphas_betas_opt[3],
-        alphas_betas_opt[4],
-        alphas_betas_opt[5],
-        alphas_betas_opt[6],
-        alphas_betas_opt[7],
-        alphas_betas_opt[8],
-        alphas_betas_opt[9],
-        alphas_betas_opt[10],
-        alphas_betas_opt[11],
-        alphas_betas_opt[12],
-        alphas_betas_opt[13],
-        alphas_betas_opt[14],
-        alphas_betas_opt[15],
-        alphas_betas_opt[16],
-        alphas_betas_opt[17],
-        alphas_betas_opt[18],
-        alphas_betas_opt[19],
-#        alphas_betas_opt[20],
-#        alphas_betas_opt[21],
-#        alphas_betas_opt[22],
-#        alphas_betas_opt[23],
-#        alphas_betas_opt[24],
-#        alphas_betas_opt[25],
-#        alphas_betas_opt[26],
-#        alphas_betas_opt[27],
-#        alphas_betas_opt[28],
-#        alphas_betas_opt[29],
-        )))
+    axis1.loglog(xdata,np.abs(eta(xdata,alphas_betas_L2_opt)))
+#        alphas_betas_L2_opt[0],
+#        alphas_betas_L2_opt[1],
+#        alphas_betas_L2_opt[2],
+#        alphas_betas_L2_opt[3],
+#        alphas_betas_L2_opt[4],
+#        alphas_betas_L2_opt[5],
+#        alphas_betas_L2_opt[6],
+#        alphas_betas_L2_opt[7],
+#        alphas_betas_L2_opt[8],
+#        alphas_betas_L2_opt[9],
+#        alphas_betas_L2_opt[10],
+#        alphas_betas_L2_opt[11],
+#        alphas_betas_L2_opt[12],
+#        alphas_betas_L2_opt[13],
+#        alphas_betas_L2_opt[14],
+#        alphas_betas_L2_opt[15],
+#        alphas_betas_L2_opt[16],
+#        alphas_betas_L2_opt[17],
+#        alphas_betas_L2_opt[18],
+#        alphas_betas_L2_opt[19],
+#        alphas_betas_L2_opt[20],
+#        alphas_betas_L2_opt[21],
+#        alphas_betas_L2_opt[22],
+#        alphas_betas_L2_opt[23],
+#        alphas_betas_L2_opt[24],
+#        alphas_betas_L2_opt[25],
+#        alphas_betas_L2_opt[26],
+#        alphas_betas_L2_opt[27],
+#        alphas_betas_L2_opt[28],
+#        alphas_betas_L2_opt[29],
+#        )))
 
     pl.show()
 
 
 
-def eta(x, 
-        alpha_1, 
-        alpha_2, 
-        alpha_3, 
-        alpha_4, 
-        alpha_5, 
-        alpha_6, 
-        alpha_7, 
-        alpha_8, 
-        alpha_9, 
-        alpha_10, 
-#        alpha_11, 
-#        alpha_12, 
-#        alpha_13, 
-#        alpha_14, 
-#        alpha_15, 
-        beta_1,
-        beta_2,
-        beta_3,
-        beta_4,
-        beta_5,
-        beta_6,
-        beta_7,
-        beta_8,
-        beta_9,
-        beta_10,
-#        beta_11,
-#        beta_12,
-#        beta_13,
-#        beta_14,
-#        beta_15,
-        ):
-
-   return 1/(2*x) \
-   - beta_1*np.exp(-x*alpha_1) \
-   - beta_2*np.exp(-x*alpha_2) \
-   - beta_3*np.exp(-x*alpha_3) \
-   - beta_4*np.exp(-x*alpha_4) \
-   - beta_5*np.exp(-x*alpha_5) \
-   - beta_6*np.exp(-x*alpha_6) \
-   - beta_7*np.exp(-x*alpha_7) \
-   - beta_8*np.exp(-x*alpha_8) \
-   - beta_9*np.exp(-x*alpha_9) \
-   - beta_10*np.exp(-x*alpha_10) \
+def eta(x, *params):
+    return 1/(2*x) - np.sum(params[np.size(params)//2:]*np.exp(-x*params[0:np.size(params)//2]))
+#   - beta_1*np.exp(-x*alpha_1) \
+#   - beta_2*np.exp(-x*alpha_2) \
+#   - beta_3*np.exp(-x*alpha_3) \
+#   - beta_4*np.exp(-x*alpha_4) \
+#   - beta_5*np.exp(-x*alpha_5) \
+#   - beta_6*np.exp(-x*alpha_6) \
+#   - beta_7*np.exp(-x*alpha_7) \
+#   - beta_8*np.exp(-x*alpha_8) \
+#   - beta_9*np.exp(-x*alpha_9) \
+#   - beta_10*np.exp(-x*alpha_10) \
 #   - beta_11*np.exp(-x*alpha_11) \ 
 #   - beta_12*np.exp(-x*alpha_12) \
 #   - beta_13*np.exp(-x*alpha_13) \

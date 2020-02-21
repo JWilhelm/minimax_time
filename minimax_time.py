@@ -42,20 +42,18 @@ def main():
     fig1, (axis1) = pl.subplots(1,1)
     axis1.set_xlim((1,R_minimax))
     axis1.set_ylim((10e-15,1))
-    axis1.loglog(xdata,np.abs(eta(xdata,alphas_betas_L2_opt)))
+    axis1.loglog(xdata,np.abs(eta_plotting(xdata,alphas_betas_L2_opt)))
 
     pl.show()
 
 
 
 def eta(x, *params):
-    print("np.shape(params)",np.shape(params))
-#    print("np.size(params)",np.size(params))
-#    print("np.size(params)//2",np.size(params)//2)
-#    print("np.shape =", np.shape(outer(x,params[0:np.size(params)//2])))
-#    print("params[0:np.size(params)//2] =", params[0:np.size(params)//2])
-
     return 1/(2*x) - (np.exp(-outer(x,params[0:np.size(params)//2]))).dot(params[np.size(params)//2:])
+
+def eta_plotting(x, *params):
+    params_1d = np.transpose(params)[:,0]
+    return 1/(2*x) - (np.exp(-outer(x,params_1d[0:np.size(params)//2]))).dot(params_1d[np.size(params)//2:])
 
 if __name__ == "__main__":
     main()

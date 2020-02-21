@@ -3,6 +3,7 @@ import matplotlib.pyplot as pl
 from matplotlib import patches
 from scipy.optimize import curve_fit
 from scipy.signal import argrelextrema
+from numpy import dot, outer
 
 def main():
     
@@ -20,6 +21,9 @@ def main():
 
     alphas_betas_init = np.logspace(-3,-2,2*n_minimax)
 
+    print("alphas_betas_init =", alphas_betas_init)
+    print("shape alphas_betas_init =", np.shape(alphas_betas_init))
+
     alphas_betas_L2_opt, alphas_betas_conv = curve_fit(eta, xdata, ydata, p0=alphas_betas_init)
 
     i = 0
@@ -32,64 +36,26 @@ def main():
 
 
     print("alphas_betas_L2_opt =", alphas_betas_L2_opt)
+    print("shape alphas_betas_L2_opt =", np.shape(alphas_betas_L2_opt))
+
 
     fig1, (axis1) = pl.subplots(1,1)
     axis1.set_xlim((1,R_minimax))
     axis1.set_ylim((10e-15,1))
     axis1.loglog(xdata,np.abs(eta(xdata,alphas_betas_L2_opt)))
-#        alphas_betas_L2_opt[0],
-#        alphas_betas_L2_opt[1],
-#        alphas_betas_L2_opt[2],
-#        alphas_betas_L2_opt[3],
-#        alphas_betas_L2_opt[4],
-#        alphas_betas_L2_opt[5],
-#        alphas_betas_L2_opt[6],
-#        alphas_betas_L2_opt[7],
-#        alphas_betas_L2_opt[8],
-#        alphas_betas_L2_opt[9],
-#        alphas_betas_L2_opt[10],
-#        alphas_betas_L2_opt[11],
-#        alphas_betas_L2_opt[12],
-#        alphas_betas_L2_opt[13],
-#        alphas_betas_L2_opt[14],
-#        alphas_betas_L2_opt[15],
-#        alphas_betas_L2_opt[16],
-#        alphas_betas_L2_opt[17],
-#        alphas_betas_L2_opt[18],
-#        alphas_betas_L2_opt[19],
-#        alphas_betas_L2_opt[20],
-#        alphas_betas_L2_opt[21],
-#        alphas_betas_L2_opt[22],
-#        alphas_betas_L2_opt[23],
-#        alphas_betas_L2_opt[24],
-#        alphas_betas_L2_opt[25],
-#        alphas_betas_L2_opt[26],
-#        alphas_betas_L2_opt[27],
-#        alphas_betas_L2_opt[28],
-#        alphas_betas_L2_opt[29],
-#        )))
 
     pl.show()
 
 
 
 def eta(x, *params):
-    return 1/(2*x) - np.sum(params[np.size(params)//2:]*np.exp(-x*params[0:np.size(params)//2]))
-#   - beta_1*np.exp(-x*alpha_1) \
-#   - beta_2*np.exp(-x*alpha_2) \
-#   - beta_3*np.exp(-x*alpha_3) \
-#   - beta_4*np.exp(-x*alpha_4) \
-#   - beta_5*np.exp(-x*alpha_5) \
-#   - beta_6*np.exp(-x*alpha_6) \
-#   - beta_7*np.exp(-x*alpha_7) \
-#   - beta_8*np.exp(-x*alpha_8) \
-#   - beta_9*np.exp(-x*alpha_9) \
-#   - beta_10*np.exp(-x*alpha_10) \
-#   - beta_11*np.exp(-x*alpha_11) \ 
-#   - beta_12*np.exp(-x*alpha_12) \
-#   - beta_13*np.exp(-x*alpha_13) \
-#   - beta_14*np.exp(-x*alpha_14) \
-#   - beta_15*np.exp(-x*alpha_15) \
+    print("np.shape(params)",np.shape(params))
+#    print("np.size(params)",np.size(params))
+#    print("np.size(params)//2",np.size(params)//2)
+#    print("np.shape =", np.shape(outer(x,params[0:np.size(params)//2])))
+#    print("params[0:np.size(params)//2] =", params[0:np.size(params)//2])
+
+    return 1/(2*x) - (np.exp(-outer(x,params[0:np.size(params)//2]))).dot(params[np.size(params)//2:])
 
 if __name__ == "__main__":
     main()

@@ -6,36 +6,115 @@ from scipy.optimize import curve_fit
 def main():
     
     # Set parameters
-    n_minimax = 20                    # Number of minimax points
+    n_minimax = 10                    # Number of minimax points
     R_minimax = 10**8                 # Range of the minimax approximation
     n_x       = 500                   # total number of points on the x-axis for optimization
 
     # initialization: 
     ###############################################################################################
-    i_values_Chebyshev = np.linspace(0,n_minimax+1)*np.pi/(n_minimax+1)
-
-    print("i_values_Chebyshev", i_values_Chebyshev)
-
-    x_extrema = np.array((R_minimax+1)/2 - (R_minimax-1)/2*np.cos(i_values_Chebyshev))
-
-    alphas = np.zeros(n_minimax)
-
-    betas = np.zeros(n_minimax)
+    alphas_betas = np.zeros(2*n_minimax)
 
     xdata = np.logspace(0,np.log10(R_minimax),n_x)
     ydata = np.zeros(n_x)
 
+    alphas_betas_init = np.logspace(-3,-2,2*n_minimax)
+#    alphas_betas_init = np.ones(2*n_minimax)
+
     print("xdata", xdata)
 
-    popt, pcov = curve_fit(eta, xdata, ydata)
+    alphas_betas_opt, alphas_betas_conv = curve_fit(eta, xdata, ydata, p0=alphas_betas_init)
+
+    print("alphas_betas_opt =", alphas_betas_opt)
+
+    fig1, (axis1) = pl.subplots(1,1)
+    axis1.set_xlim((1,R_minimax))
+    axis1.set_ylim((10e-15,1))
+    axis1.loglog(xdata,np.abs(eta(xdata,
+        alphas_betas_opt[0],
+        alphas_betas_opt[1],
+        alphas_betas_opt[2],
+        alphas_betas_opt[3],
+        alphas_betas_opt[4],
+        alphas_betas_opt[5],
+        alphas_betas_opt[6],
+        alphas_betas_opt[7],
+        alphas_betas_opt[8],
+        alphas_betas_opt[9],
+        alphas_betas_opt[10],
+        alphas_betas_opt[11],
+        alphas_betas_opt[12],
+        alphas_betas_opt[13],
+        alphas_betas_opt[14],
+        alphas_betas_opt[15],
+        alphas_betas_opt[16],
+        alphas_betas_opt[17],
+        alphas_betas_opt[18],
+        alphas_betas_opt[19],
+#        alphas_betas_opt[20],
+#        alphas_betas_opt[21],
+#        alphas_betas_opt[22],
+#        alphas_betas_opt[23],
+#        alphas_betas_opt[24],
+#        alphas_betas_opt[25],
+#        alphas_betas_opt[26],
+#        alphas_betas_opt[27],
+#        alphas_betas_opt[28],
+#        alphas_betas_opt[29],
+        )))
+
+    pl.show()
 
 
-    print("x_extrema", x_extrema)
 
+def eta(x, 
+        alpha_1, 
+        alpha_2, 
+        alpha_3, 
+        alpha_4, 
+        alpha_5, 
+        alpha_6, 
+        alpha_7, 
+        alpha_8, 
+        alpha_9, 
+        alpha_10, 
+#        alpha_11, 
+#        alpha_12, 
+#        alpha_13, 
+#        alpha_14, 
+#        alpha_15, 
+        beta_1,
+        beta_2,
+        beta_3,
+        beta_4,
+        beta_5,
+        beta_6,
+        beta_7,
+        beta_8,
+        beta_9,
+        beta_10,
+#        beta_11,
+#        beta_12,
+#        beta_13,
+#        beta_14,
+#        beta_15,
+        ):
 
-def eta(x, alphas, betas):
-   return 1/(2*x) - np.dot(betas, np.exp(-x*alphas))
-
+   return 1/(2*x) \
+   - beta_1*np.exp(-x*alpha_1) \
+   - beta_2*np.exp(-x*alpha_2) \
+   - beta_3*np.exp(-x*alpha_3) \
+   - beta_4*np.exp(-x*alpha_4) \
+   - beta_5*np.exp(-x*alpha_5) \
+   - beta_6*np.exp(-x*alpha_6) \
+   - beta_7*np.exp(-x*alpha_7) \
+   - beta_8*np.exp(-x*alpha_8) \
+   - beta_9*np.exp(-x*alpha_9) \
+   - beta_10*np.exp(-x*alpha_10) \
+#   - beta_11*np.exp(-x*alpha_11) \ 
+#   - beta_12*np.exp(-x*alpha_12) \
+#   - beta_13*np.exp(-x*alpha_13) \
+#   - beta_14*np.exp(-x*alpha_14) \
+#   - beta_15*np.exp(-x*alpha_15) \
 
 if __name__ == "__main__":
     main()

@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as pl
 from matplotlib import patches
-from scipy.optimize import curve_fit, fsolve
+from scipy.optimize import curve_fit, root
 from scipy.signal import argrelextrema
 from numpy import dot, outer
 
@@ -25,19 +25,22 @@ def main():
 
     alpha_beta_E = np.append(alphas_betas_L2_opt, abs(eta_plotting(xdata[0],alphas_betas_L2_opt)))
 
+    print("alpha_beta_E",alpha_beta_E)
+
     i = 0
     while i < 1:
 
         extrema_x = np.append(xdata[0], xdata[argrelextrema(eta_plotting(xdata,alphas_betas_L2_opt), np.greater)[0]])
         extrema_x = np.append(extrema_x, xdata[argrelextrema(eta_plotting(xdata,alphas_betas_L2_opt), np.less)[0]])
 
-#        alphas_betas_E = fsolve(eta_for_alphas_betas_E_update, args=extrema_x)
+        alphas_betas_E = root(eta_for_alphas_betas_E_update, x0=alpha_beta_E, args=extrema_x)
 
         i += 1
 
     fig1, (axis1) = pl.subplots(1,1)
     axis1.set_xlim((1,R_minimax))
     axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_L2_opt))
+    axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_E))
     axis1.semilogx(extrema_x, eta_plotting(extrema_x,alphas_betas_L2_opt), "x")
 
     pl.show()
@@ -52,7 +55,15 @@ def eta_plotting(x, *params):
     return 1/(2*x) - (np.exp(-outer(x,params_1d[0:np.size(params)//2]))).dot(params_1d[np.size(params)//2:])
 
 def eta_for_alphas_betas_E_update(x, *params):
-    return 1/(2*params) - (np.exp(-outer(params,x[0:np.size(x)//2]))).dot(x[np.size(x)//2:])
+    params_1d = np.transpose(params)[:,0]
+    print("np.shape(params_1d)",np.shape(params_1d))
+    print("params_1d",params_1d)
+    size_params = np.size(params_1d)
+    E = np.empty((size_params,))
+    E[::2] = -params_1d[size_params-1]
+    E[1::2] = params_1d[size_params-1]
+    print("E",E)
+    return 1/(2*params_1d) - (np.exp(-outer(params_1d,x[0:np.size(x)//2]))).dot(x[np.size(x)//2:]) + E
 
 if __name__ == "__main__":
     main()

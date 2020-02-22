@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as pl
 from matplotlib import patches
-from scipy.optimize import curve_fit, root
+from scipy.optimize import curve_fit, root, fsolve
 from scipy.signal import argrelextrema
 from numpy import dot, outer
 
@@ -33,16 +33,16 @@ def main():
         alphas_betas_E[np.size(alphas_betas_E)-1] = np.average(np.abs(eta_plotting(extrema_x,alphas_betas_L2_opt)))
         print("alphas_betas_E",alphas_betas_E)
 
-        alphas_betas_E = root(eta_for_alphas_betas_E_update, x0=alphas_betas_E, args=extrema_x)
+        alphas_betas_E = fsolve(eta_for_alphas_betas_E_update, x0=alphas_betas_E, args=extrema_x)
 
         i += 1
 
-    print("alphas_betas_E after root ",alphas_betas_E.x)
+    print("alphas_betas_E after root ",alphas_betas_E)
 
     fig1, (axis1) = pl.subplots(1,1)
     axis1.set_xlim((1,R_minimax))
     axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_L2_opt))
-    axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_E.x))
+    axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_E))
     axis1.semilogx(extrema_x, eta_plotting(extrema_x,alphas_betas_L2_opt), "x")
 
     pl.show()

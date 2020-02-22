@@ -21,21 +21,26 @@ def main():
     ydata = np.zeros(n_x)
 
     alphas_betas_init = np.logspace(-3,-2,2*n_minimax)
+#    alphas_betas_init = np.append(np.logspace(-2,3,n_minimax), np.ones(n_minimax)//n_minimax)
+
+    print("np.shape(alphas_betas_init)",np.shape(alphas_betas_init))
+
     alphas_betas_L2_opt, alphas_betas_conv = curve_fit(eta, xdata, ydata, p0=alphas_betas_init)
     alphas_betas_E = np.append(alphas_betas_L2_opt,1)
 
     E_old = alphas_betas_E[-1]*2
+
     i = 0
     while (alphas_betas_E[-1]/E_old < 1-eps_diff or alphas_betas_E[-1] > E_old):
 
         E_old = alphas_betas_E[-1]
         extrema_x = np.append(xdata[0], xdata[argrelextrema(eta_plotting(xdata,alphas_betas_E[0:np.size(alphas_betas_E)-1]), np.greater)[0]])
         extrema_x = np.append(extrema_x, xdata[argrelextrema(eta_plotting(xdata,alphas_betas_E[0:np.size(alphas_betas_E)-1]), np.less)[0]])
-        alphas_betas_E[np.size(alphas_betas_E)-1] = np.average(np.abs(eta_plotting(extrema_x,alphas_betas_L2_opt)))
+        alphas_betas_E[np.size(alphas_betas_E)-1] = np.average(np.abs(eta_plotting(extrema_x,alphas_betas_E[0:np.size(alphas_betas_E)-1])))
+        i += 1
+        print("iteration =", i, "E =",  alphas_betas_E[-1])
 
         alphas_betas_E = fsolve(eta_for_alphas_betas_E_update, x0=alphas_betas_E, args=extrema_x)
-        i += 1
-        print("iteration =", i, "E=",  alphas_betas_E[-1])
 
     fig1, (axis1) = pl.subplots(1,1)
     axis1.set_xlim((0.8,R_minimax))

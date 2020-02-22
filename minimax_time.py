@@ -8,12 +8,10 @@ from numpy import dot, outer
 def main():
     
     # Set parameters
-    n_minimax = 12                    # Number of minimax points
+    n_minimax = 22                    # Number of minimax points
     R_minimax = 10**8                 # Range of the minimax approximation
     n_x       = 1000                   # total number of points on the x-axis for optimization
     eps_diff  = 10**(-5)
-
-    alphas_betas = np.zeros(2*n_minimax)
 
     xdata = 10**(np.logspace(0,np.log(np.log10(R_minimax)),n_x))
     ydata = np.zeros(n_x)
@@ -44,7 +42,6 @@ def main():
     axis1.set_xlim((0.8,R_minimax))
     axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_L2_opt))
     axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_E))
-    axis1.semilogx(extrema_x, eta_plotting(extrema_x,alphas_betas_L2_opt), "x")
     axis1.semilogx([0.8,R_minimax], [alphas_betas_E[-1],alphas_betas_E[-1]])
     axis1.semilogx([0.8,R_minimax], [-alphas_betas_E[-1],-alphas_betas_E[-1]])
 

@@ -11,6 +11,7 @@ def main():
     n_minimax = 10                    # Number of minimax points
     R_minimax = 10**8                 # Range of the minimax approximation
     n_x       = 500                   # total number of points on the x-axis for optimization
+    eps_diff  = 10**(-5)
 
     # initialization: 
     ###############################################################################################
@@ -23,21 +24,22 @@ def main():
 
     alphas_betas_L2_opt, alphas_betas_conv = curve_fit(eta, xdata, ydata, p0=alphas_betas_init)
 
-    alphas_betas_E = np.append(alphas_betas_L2_opt,0)
+    alphas_betas_E = np.append(alphas_betas_L2_opt,1)
 
+    E_old = alphas_betas_E[-1]*2
     i = 0
-    while i < 1:
+    while (alphas_betas_E[-1]/E_old < 1-eps_diff):
 
+        E_old = alphas_betas_E[-1]
         extrema_x = np.append(xdata[0], xdata[argrelextrema(eta_plotting(xdata,alphas_betas_L2_opt), np.greater)[0]])
         extrema_x = np.append(extrema_x, xdata[argrelextrema(eta_plotting(xdata,alphas_betas_L2_opt), np.less)[0]])
-        print("extrema_x =",extrema_x)
         alphas_betas_E[np.size(alphas_betas_E)-1] = np.average(np.abs(eta_plotting(extrema_x,alphas_betas_L2_opt)))
-        print("alphas_betas_E",alphas_betas_E)
 
         alphas_betas_E = fsolve(eta_for_alphas_betas_E_update, x0=alphas_betas_E, args=extrema_x)
-
         i += 1
+        print("iter =", i, "E=",  alphas_betas_E[-1])
 
+    print("num iter ",i)
     print("alphas_betas_E after root ",alphas_betas_E)
 
     print("roots really?",eta_for_alphas_betas_E_update(alphas_betas_E,extrema_x))

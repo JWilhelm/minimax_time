@@ -69,8 +69,8 @@ def eta_for_alphas_betas_E_update(x, *params):
     size_params = np.size(params_1d)
     size_x = np.size(x)
     E = np.empty(size_x)
-    E[0:size_x//2] = x[size_params-1]
-    E[size_x//2:] = -x[size_params-1]
+    E[0:size_x//2+1] = x[size_params-1]
+    E[size_x//2+1:] = -x[size_params-1]
 
 #    print("x",x)
 #    print("E",x[size_params-1])

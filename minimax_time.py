@@ -26,13 +26,15 @@ def main():
 
     alphas_betas_E = np.append(alphas_betas_L2_opt,1)
 
+    print("np.shape(alphas_betas_E)", np.shape(alphas_betas_E))
+ 
     E_old = alphas_betas_E[-1]*2
     i = 0
     while (alphas_betas_E[-1]/E_old < 1-eps_diff):
 
         E_old = alphas_betas_E[-1]
-        extrema_x = np.append(xdata[0], xdata[argrelextrema(eta_plotting(xdata,alphas_betas_L2_opt), np.greater)[0]])
-        extrema_x = np.append(extrema_x, xdata[argrelextrema(eta_plotting(xdata,alphas_betas_L2_opt), np.less)[0]])
+        extrema_x = np.append(xdata[0], xdata[argrelextrema(eta_plotting(xdata,alphas_betas_E[0:np.size(alphas_betas_E)-1]), np.greater)[0]])
+        extrema_x = np.append(extrema_x, xdata[argrelextrema(eta_plotting(xdata,alphas_betas_E[0:np.size(alphas_betas_E)-1]), np.less)[0]])
         alphas_betas_E[np.size(alphas_betas_E)-1] = np.average(np.abs(eta_plotting(extrema_x,alphas_betas_L2_opt)))
 
         alphas_betas_E = fsolve(eta_for_alphas_betas_E_update, x0=alphas_betas_E, args=extrema_x)

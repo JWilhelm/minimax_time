@@ -48,10 +48,12 @@ def main():
     print("roots 2",eta_plotting(extrema_x,alphas_betas_E))
 
     fig1, (axis1) = pl.subplots(1,1)
-    axis1.set_xlim((1,R_minimax))
+    axis1.set_xlim((0.8,R_minimax))
     axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_L2_opt))
     axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_E))
     axis1.semilogx(extrema_x, eta_plotting(extrema_x,alphas_betas_L2_opt), "x")
+    axis1.semilogx([0.8,R_minimax], [alphas_betas_E[-1],alphas_betas_E[-1]])
+    axis1.semilogx([0.8,R_minimax], [-alphas_betas_E[-1],-alphas_betas_E[-1]])
 
     pl.show()
 

@@ -8,9 +8,9 @@ from numpy import dot, outer
 def main():
     
     # Set parameters
-    n_minimax = 22                    # Number of minimax points
-    R_minimax = 10**8                 # Range of the minimax approximation
-    n_x       = 1000                   # total number of points on the x-axis for optimization
+    n_minimax = 22                   # Number of minimax points
+    R_minimax = 10**12                 # Range of the minimax approximation
+    n_x       = 2000                   # total number of points on the x-axis for optimization
     eps_diff  = 10**(-5)
 
     xdata = 10**(np.logspace(0,np.log(np.log10(R_minimax)),n_x))
@@ -18,17 +18,22 @@ def main():
 
     alphas_betas_init = np.loadtxt("alpha_beta_of_N_"+str(n_minimax))
 
+    alphas_betas_init[n_minimax:] = alphas_betas_init[n_minimax:]/2
+
     alphas_betas_L2_opt, alphas_betas_conv = curve_fit(eta, xdata, ydata, p0=alphas_betas_init)
     alphas_betas_E = np.append(alphas_betas_L2_opt,1)
 
     E_old = alphas_betas_E[-1]*2
 
+    sort_indices = np.argsort(alphas_betas_E[0:n_minimax])
+    np.savetxt("alpha_beta_of_N_"+str(n_minimax)+"_L2", np.append(alphas_betas_E[sort_indices],alphas_betas_E[sort_indices+n_minimax]) )
     i = 0
     while (alphas_betas_E[-1]/E_old < 1-eps_diff or alphas_betas_E[-1] > E_old):
 
         E_old = alphas_betas_E[-1]
         extrema_x = np.append(xdata[0], xdata[argrelextrema(eta_plotting(xdata,alphas_betas_E[0:np.size(alphas_betas_E)-1]), np.greater)[0]])
         extrema_x = np.append(extrema_x, xdata[argrelextrema(eta_plotting(xdata,alphas_betas_E[0:np.size(alphas_betas_E)-1]), np.less)[0]])
+        print("number of extrema =", np.size(extrema_x))
         alphas_betas_E[np.size(alphas_betas_E)-1] = np.average(np.abs(eta_plotting(extrema_x,alphas_betas_E[0:np.size(alphas_betas_E)-1])))
         i += 1
         print("iteration =", i, "E =",  alphas_betas_E[-1])
@@ -61,7 +66,6 @@ def eta_for_alphas_betas_E_update(x, *params):
     E = np.empty(size_x)
     E[0:size_x//2+1] = x[size_params-1]
     E[size_x//2+1:] = -x[size_params-1]
-
     return 1/(2*params_1d) - (np.exp(-outer(params_1d,x[0:np.size(x)//2]))).dot(x[np.size(x)//2:np.size(x)-1]) - E
 
 if __name__ == "__main__":

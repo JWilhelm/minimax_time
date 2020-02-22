@@ -8,7 +8,7 @@ from numpy import dot, outer
 def main():
     
     # Set parameters
-    n_minimax = 26                   # Number of minimax points
+    n_minimax = 28                   # Number of minimax points
     R_minimax = 10**10                 # Range of the minimax approximation
     n_x       = 5000                   # total number of points on the x-axis for optimization
     eps_diff  = 10**(-10)
@@ -20,6 +20,8 @@ def main():
 
     alphas_betas_L2_opt, alphas_betas_conv = curve_fit(eta, xdata, ydata, p0=alphas_betas_init)
     alphas_betas_E = np.append(alphas_betas_L2_opt,1)
+
+    xdata = 10**(np.logspace(0,np.log(np.log10(R_minimax)),n_x))/10
 
     E_old = alphas_betas_E[-1]*2
 
@@ -35,6 +37,7 @@ def main():
         alphas_betas_E[np.size(alphas_betas_E)-1] = np.average(np.abs(eta_plotting(extrema_x,alphas_betas_E[0:np.size(alphas_betas_E)-1])))
         i += 1
         print("iteration =", i, "E =",  alphas_betas_E[-1])
+        print("iteration =", i, "alphas_betas_E =",  alphas_betas_E)
 
         alphas_betas_E = fsolve(eta_for_alphas_betas_E_update, x0=alphas_betas_E, args=extrema_x)
 

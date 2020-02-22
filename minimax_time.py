@@ -23,9 +23,9 @@ def main():
 
     alphas_betas_L2_opt, alphas_betas_conv = curve_fit(eta, xdata, ydata, p0=alphas_betas_init)
 
-    alpha_beta_E = np.append(alphas_betas_L2_opt, abs(eta_plotting(xdata[0],alphas_betas_L2_opt)))
+    alphas_betas_E = np.append(alphas_betas_L2_opt, abs(eta_plotting(xdata[0],alphas_betas_L2_opt)))
 
-    print("alpha_beta_E",alpha_beta_E)
+    print("alphas_betas_E",alphas_betas_E)
 
     i = 0
     while i < 1:
@@ -33,7 +33,7 @@ def main():
         extrema_x = np.append(xdata[0], xdata[argrelextrema(eta_plotting(xdata,alphas_betas_L2_opt), np.greater)[0]])
         extrema_x = np.append(extrema_x, xdata[argrelextrema(eta_plotting(xdata,alphas_betas_L2_opt), np.less)[0]])
 
-        alphas_betas_E = root(eta_for_alphas_betas_E_update, x0=alpha_beta_E, args=extrema_x)
+        alphas_betas_E = root(eta_for_alphas_betas_E_update, x0=alphas_betas_E, args=extrema_x)
 
         i += 1
 
@@ -51,19 +51,22 @@ def eta(x, *params):
     return 1/(2*x) - (np.exp(-outer(x,params[0:np.size(params)//2]))).dot(params[np.size(params)//2:])
 
 def eta_plotting(x, *params):
+    print("np.shape(params)",np.shape(params))
     params_1d = np.transpose(params)[:,0]
     return 1/(2*x) - (np.exp(-outer(x,params_1d[0:np.size(params)//2]))).dot(params_1d[np.size(params)//2:])
 
 def eta_for_alphas_betas_E_update(x, *params):
+#    print("np.shape(params)",np.shape(params_1d))
     params_1d = np.transpose(params)[:,0]
-    print("np.shape(params_1d)",np.shape(params_1d))
-    print("params_1d",params_1d)
+#    print("np.shape(params_1d)",np.shape(params_1d))
+#    print("params_1d",params_1d)
     size_params = np.size(params_1d)
     E = np.empty((size_params,))
-    E[::2] = -params_1d[size_params-1]
-    E[1::2] = params_1d[size_params-1]
-    print("E",E)
-    return 1/(2*params_1d) - (np.exp(-outer(params_1d,x[0:np.size(x)//2]))).dot(x[np.size(x)//2:]) + E
+    E[::2] = -x[size_params-1]
+    E[1::2] = x[size_params-1]
+#    print("E",E)
+    print("alpha_beta_E inside root", x)
+    return 1/(2*params_1d) - (np.exp(-outer(params_1d,x[0:np.size(x)//2]))).dot(x[np.size(x)//2:np.size(x)-1]) + E
 
 if __name__ == "__main__":
     main()

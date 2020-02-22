@@ -8,7 +8,7 @@ from numpy import dot, outer
 def main():
     
     # Set parameters
-    n_minimax = 22                   # Number of minimax points
+    n_minimax = 26                   # Number of minimax points
     R_minimax = 10**12                 # Range of the minimax approximation
     n_x       = 2000                   # total number of points on the x-axis for optimization
     eps_diff  = 10**(-5)
@@ -17,8 +17,6 @@ def main():
     ydata = np.zeros(n_x)
 
     alphas_betas_init = np.loadtxt("alpha_beta_of_N_"+str(n_minimax))
-
-    alphas_betas_init[n_minimax:] = alphas_betas_init[n_minimax:]/2
 
     alphas_betas_L2_opt, alphas_betas_conv = curve_fit(eta, xdata, ydata, p0=alphas_betas_init)
     alphas_betas_E = np.append(alphas_betas_L2_opt,1)

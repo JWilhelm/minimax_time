@@ -16,10 +16,8 @@ def main():
     xdata = 10**(np.logspace(0,np.log(np.log10(R_minimax)),n_x))/10
     ydata = np.zeros(n_x)
 
-    alphas_betas_init = np.loadtxt("alpha_beta_of_N_"+str(n_minimax))
-
-    alphas_betas_L2_opt, alphas_betas_conv = curve_fit(eta, xdata, ydata, p0=alphas_betas_init)
-    alphas_betas_E = np.append(alphas_betas_L2_opt,1)
+    alphas_betas = np.loadtxt("alpha_beta_of_N_"+str(n_minimax))
+    alphas_betas_E = np.append(alphas_betas,1)
 
     E_old = alphas_betas_E[-1]*2
 
@@ -39,11 +37,9 @@ def main():
         alphas_betas_E = fsolve(eta_for_alphas_betas_E_update, x0=alphas_betas_E, args=extrema_x)
 
     sort_indices = np.argsort(alphas_betas_E[0:n_minimax])
-    np.savetxt("alpha_beta_of_N_"+str(n_minimax), np.append(alphas_betas_E[sort_indices],alphas_betas_E[sort_indices+n_minimax]) )
 
     fig1, (axis1) = pl.subplots(1,1)
     axis1.set_xlim((0.8,R_minimax))
-    axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_L2_opt))
     axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_E))
     axis1.semilogx([0.8,R_minimax], [alphas_betas_E[-1],alphas_betas_E[-1]])
     axis1.semilogx([0.8,R_minimax], [-alphas_betas_E[-1],-alphas_betas_E[-1]])

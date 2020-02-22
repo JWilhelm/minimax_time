@@ -42,6 +42,10 @@ def main():
 
         alphas_betas_E = fsolve(eta_for_alphas_betas_E_update, x0=alphas_betas_E, args=extrema_x)
 
+    sort_indices = np.argsort(alphas_betas_E[0:n_minimax])
+    print("optimized alpha parameters:", alphas_betas_E[sort_indices])
+    print("optimized beta parameters: ", alphas_betas_E[sort_indices+n_minimax])
+
     fig1, (axis1) = pl.subplots(1,1)
     axis1.set_xlim((0.8,R_minimax))
     axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_L2_opt))

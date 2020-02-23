@@ -40,11 +40,11 @@ def eta(x, *params):
     n_opt = np.size(params)//2
     n_minimax = 28
     alphas_betas_init = np.loadtxt("alpha_beta_of_N_"+str(n_minimax))
-    return 1/(2*x) - (np.exp(-outer(x,np.append(params[0:n_opt], alphas_betas_init[n_opt:n_minimax])))).dot(np.append(params[n_opt:],alphas_betas_init[n_minimax+n_opt:]))
+    return 1/x - (np.exp(-outer(x,np.append(params[0:n_opt], alphas_betas_init[n_opt:n_minimax])))).dot(np.append(params[n_opt:],alphas_betas_init[n_minimax+n_opt:]))
 
 def eta_plotting(x, *params):
     params_1d = np.transpose(params)[:,0]
-    return 1/(2*x) - (np.exp(-outer(x,params_1d[0:np.size(params)//2]))).dot(params_1d[np.size(params)//2:(np.size(params)//2)*2])
+    return 1/x - (np.exp(-outer(x,params_1d[0:np.size(params)//2]))).dot(params_1d[np.size(params)//2:(np.size(params)//2)*2])
 
 if __name__ == "__main__":
     main()

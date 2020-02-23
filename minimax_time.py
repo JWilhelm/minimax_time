@@ -8,9 +8,9 @@ from numpy import dot, outer
 def main():
     
     # Set parameters
-    n_minimax = 28                     # Number of minimax points
-    R_minimax = 10**10                 # Range of the minimax approximation
-    n_x       = 5000                   # total number of points on the x-axis for optimization
+    n_minimax = 50                     # Number of minimax points
+    R_minimax = 10**14                 # Range of the minimax approximation
+    n_x       = 8000                   # total number of points on the x-axis for optimization
     eps_diff  = 10**(-10)
 
     xdata = 10**(np.logspace(0,np.log(np.log10(R_minimax)),n_x))/10.2

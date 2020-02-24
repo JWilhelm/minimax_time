@@ -13,7 +13,8 @@ def main():
     n_x       = 8000                   # total number of points on the x-axis for optimization
     eps_diff  = 10**(-10)
 
-    xdata = 10**(np.logspace(0,np.log(np.log10(R_minimax)),n_x))/10.2
+    xdata = 10**(np.logspace(0,np.log10(np.log10(R_minimax)+1),n_x))/10
+    print("xdata=",xdata)
     ydata = np.zeros(n_x)
 
     alphas_betas_init = np.loadtxt("alpha_beta_of_N_"+str(n_minimax))

@@ -9,7 +9,7 @@ def main():
     
     # Set parameters
     n_minimax = 36                     # Number of minimax points
-    R_minimax = int(2*10**10)                 # Range of the minimax approximation
+    R_minimax = int(1.1*10**10)                 # Range of the minimax approximation
     n_x       = 8000                   # total number of points on the x-axis for optimization
     eps_diff  = 10**(-10)
 
@@ -32,10 +32,9 @@ def main():
 
         E_old = alphas_betas_E[-1]
         extrema_x = np.append(xdata[0], xdata[argrelextrema(eta_plotting(xdata,alphas_betas_E[0:np.size(alphas_betas_E)-1]), np.greater)[0]])
-        extrema_x = np.append(extrema_x, xdata[argrelextrema(eta_plotting(xdata,alphas_betas_E[0:np.size(alphas_betas_E)-1]), np.less)[0]])
-        if np.size(extrema_x) == 2*n_minimax: 
-          print("add right maximum")
+        if np.size(extrema_x) == n_minimax: 
           extrema_x = np.append(extrema_x, xdata[-1])
+        extrema_x = np.append(extrema_x, xdata[argrelextrema(eta_plotting(xdata,alphas_betas_E[0:np.size(alphas_betas_E)-1]), np.less)[0]])
         print("number of extrema =", np.size(extrema_x))
         alphas_betas_E[np.size(alphas_betas_E)-1] = np.average(np.abs(eta_plotting(extrema_x,alphas_betas_E[0:np.size(alphas_betas_E)-1])))
         i += 1

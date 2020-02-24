@@ -87,9 +87,9 @@ def my_fsolve(extrema_x, alphas_betas_E):
     size_problem = np.size(alphas_betas_E)
     n_minimax = (size_problem-1)//2
 
-    vec_f = eta(extrema_x, alphas_betas_E)
+    vec_f = eta_plotting(extrema_x, alphas_betas_E)
 
-    mat_J = np.zeros((size_problem, size_problem),dtype=np.float128)
+    mat_J = np.zeros((size_problem, size_problem+1),dtype=np.float128)
 #    print("npsize(J_mat)", np.size(J_mat))
 #    print("npshape(J_mat)", np.shape(J_mat))
 
@@ -99,15 +99,49 @@ def my_fsolve(extrema_x, alphas_betas_E):
 
     mat_J[-1,0:n_minimax+1] = alphas_betas_E[-1]
     mat_J[-1,n_minimax+1:] = -alphas_betas_E[-1]
+    mat_J[0,:] = vec_f[:]
 
-    inv_J = np.linalg.inv(mat_J)
+#    inv_J = np.linalg.inv(mat_J)
+#    delta = -np.dot(inv_J, vec_f)
 
-    delta = -np.dot(inv_J, vec_f)
+    delta = gauss(mat_J)
 
-    return alphas_betas_E + delta
+    return alphas_betas_E - delta
 
+def gauss(A):
+    n = len(A)
 
+    for i in range(0, n):
+        # Search for maximum in this column
+        maxEl = abs(A[i][i])
+        maxRow = i
+        for k in range(i+1, n):
+            if abs(A[k][i]) > maxEl:
+                maxEl = abs(A[k][i])
+                maxRow = k
 
+        # Swap maximum row with current row (column by column)
+        for k in range(i, n+1):
+            tmp = A[maxRow][k]
+            A[maxRow][k] = A[i][k]
+            A[i][k] = tmp
+
+        # Make all rows below this one 0 in current column
+        for k in range(i+1, n):
+            c = -A[k][i]/A[i][i]
+            for j in range(i, n+1):
+                if i == j:
+                    A[k][j] = 0
+                else:
+                    A[k][j] += c * A[i][j]
+
+    # Solve equation Ax=b for an upper triangular matrix A
+    x = [0 for i in range(n)]
+    for i in range(n-1, -1, -1):
+        x[i] = A[i][n]/A[i][i]
+        for k in range(i-1, -1, -1):
+            A[k][n] -= A[k][i] * x[i]
+    return x
 
 if __name__ == "__main__":
     main()

@@ -19,9 +19,6 @@ def main():
 
     alphas_betas_init = np.loadtxt("alpha_beta_of_N_"+str(n_minimax))
 
-    # for getting 1/2 parameters
-    alphas_betas_init[n_minimax:] = alphas_betas_init[n_minimax:]
-
 #    alphas_betas_L2_opt, alphas_betas_conv = curve_fit(eta, xdata, ydata, p0=alphas_betas_init)
 #    alphas_betas_E = np.append(alphas_betas_L2_opt,1)
     alphas_betas_E = np.append(alphas_betas_init,1)

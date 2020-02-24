@@ -8,8 +8,8 @@ from numpy import dot, outer
 def main():
     
     # Set parameters
-    n_minimax = 36                     # Number of minimax points
-    R_minimax = int(1.1*10**10)                 # Range of the minimax approximation
+    n_minimax = 20                     # Number of minimax points
+    R_minimax = int(10**7)                 # Range of the minimax approximation
     n_x       = 8000                   # total number of points on the x-axis for optimization
     eps_diff  = 10**(-10)
 
@@ -18,9 +18,6 @@ def main():
     ydata = np.zeros(n_x)
 
     alphas_betas_init = np.loadtxt("../alpha_beta_of_N_"+str(n_minimax))
-
-    # for getting 1/2 parameters
-    alphas_betas_init[n_minimax:] = alphas_betas_init[n_minimax:]
 
     alphas_betas_E = np.append(alphas_betas_init,1)
 
@@ -40,6 +37,8 @@ def main():
         i += 1
         print("iteration =", i, "E =",  alphas_betas_E[-1])
         print("iteration =", i, "alphas_betas_E =",  alphas_betas_E)
+    
+        pl.show()
 
         alphas_betas_E = fsolve(eta_for_alphas_betas_E_update, x0=alphas_betas_E, args=extrema_x)
 
@@ -52,7 +51,6 @@ def main():
 
     fig1, (axis1) = pl.subplots(1,1)
     axis1.set_xlim((0.8,R_minimax))
-#    axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_L2_opt))
     axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_E))
     axis1.semilogx([0.8,R_minimax], [alphas_betas_E[-1],alphas_betas_E[-1]])
     axis1.semilogx([0.8,R_minimax], [-alphas_betas_E[-1],-alphas_betas_E[-1]])

@@ -92,8 +92,8 @@ def my_fsolve(extrema_x, alphas_betas_E):
     n_minimax = (size_problem-1)//2
 
 #HACK
-    n_minimax = 2
-    size_problem = 5
+#    n_minimax = 1
+#    size_problem = 3
 
     vec_f = eta_plotting(extrema_x, alphas_betas_E)
 
@@ -127,7 +127,7 @@ def my_fsolve(extrema_x, alphas_betas_E):
     print("mat_J[0,:]=", mat_J[0,:])
     print("mat_J[1,:]=", mat_J[1,:])
     print("mat_J[2,:]=", mat_J[2,:])
-    print("mat_J[3,:]=", mat_J[3,:])
+#    print("mat_J[3,:]=", mat_J[3,:])
 
     delta = gauss(mat_J)
 

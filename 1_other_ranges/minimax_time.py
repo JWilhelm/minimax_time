@@ -8,7 +8,7 @@ from numpy import dot, outer
 def main():
     
     # Set parameters
-    n_minimax = 20                     # Number of minimax points
+    n_minimax = 10                     # Number of minimax points
     R_minimax = int(10**7)                 # Range of the minimax approximation
     n_x       = 8000                   # total number of points on the x-axis for optimization
     eps_diff  = 10**(-10)
@@ -44,7 +44,11 @@ def main():
 #        axis1.semilogx([0.8,R_minimax], [alphas_betas_E[-1],alphas_betas_E[-1]])
 #        axis1.semilogx([0.8,R_minimax], [-alphas_betas_E[-1],-alphas_betas_E[-1]])
 
+        print("alphas_betas_E before solving", alphas_betas_E)
+
         alphas_betas_E = my_fsolve(extrema_x, alphas_betas_E)
+
+        print("alphas_betas_E after solving", alphas_betas_E)
 
 
 #        alphas_betas_E = fsolve(eta_for_alphas_betas_E_update, x0=alphas_betas_E, args=extrema_x)
@@ -87,24 +91,47 @@ def my_fsolve(extrema_x, alphas_betas_E):
     size_problem = np.size(alphas_betas_E)
     n_minimax = (size_problem-1)//2
 
+#HACK
+    n_minimax = 2
+    size_problem = 5
+
     vec_f = eta_plotting(extrema_x, alphas_betas_E)
 
     mat_J = np.zeros((size_problem, size_problem+1),dtype=np.float128)
 #    print("npsize(J_mat)", np.size(J_mat))
 #    print("npshape(J_mat)", np.shape(J_mat))
+    print("")
+    print("vec_f", vec_f[0:size_problem])
+    print("")
+
+    print("")
+    print("extrema_x", extrema_x[0:size_problem])
+    print("")
 
     for index_i in range(n_minimax):
-        mat_J[:,index_i] = -2*extrema_x*alphas_betas_E[index_i+n_minimax]*np.exp(-2*extrema_x*alphas_betas_E[index_i])
-        mat_J[:,index_i+n_minimax] = np.exp(-2*extrema_x*alphas_betas_E[index_i])
+#        mat_J[:,index_i] = -2*extrema_x*alphas_betas_E[index_i+n_minimax]*np.exp(-2*extrema_x*alphas_betas_E[index_i])
+        mat_J[:,index_i] = -2*extrema_x[0:size_problem]*alphas_betas_E[index_i+n_minimax]*np.exp(-2*extrema_x[0:size_problem]*alphas_betas_E[index_i])
+#        mat_J[:,index_i+n_minimax] = np.exp(-2*extrema_x*alphas_betas_E[index_i])
+        mat_J[:,index_i+n_minimax] = np.exp(-2*extrema_x[0:size_problem]*alphas_betas_E[index_i])
 
     mat_J[-1,0:n_minimax+1] = alphas_betas_E[-1]
     mat_J[-1,n_minimax+1:2*n_minimax+1] = -alphas_betas_E[-1]
-    mat_J[:,-1] = vec_f[:]
+#    mat_J[:,-2] = -np.sign(vec_f)
+    mat_J[:,-2] = -np.sign(vec_f[0:size_problem])
+#    mat_J[:,-1] = vec_f[:]
+    mat_J[:,-1] = vec_f[0:size_problem]
 
 #    inv_J = np.linalg.inv(mat_J)
 #    delta = -np.dot(inv_J, vec_f)
 
+    print("mat_J[0,:]=", mat_J[0,:])
+    print("mat_J[1,:]=", mat_J[1,:])
+    print("mat_J[2,:]=", mat_J[2,:])
+    print("mat_J[3,:]=", mat_J[3,:])
+
     delta = gauss(mat_J)
+
+    print("delta=", delta)
 
     return alphas_betas_E - delta
 

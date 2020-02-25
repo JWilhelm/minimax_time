@@ -57,11 +57,11 @@ def main():
 
 #        alphas_betas_E = fsolve(eta_for_alphas_betas_E_update, x0=alphas_betas_E, args=extrema_x)
 
-        alphas_betas_E = fsolve(eta_for_alphas_betas_E_update, x0=alphas_betas_E_diff, args=extrema_x)
+#        alphas_betas_E = fsolve(eta_for_alphas_betas_E_update, x0=alphas_betas_E_diff, args=extrema_x)
 
-        alphas_betas_E_diff = alphas_betas_E - alphas_betas_E_diff
+#        alphas_betas_E_diff = alphas_betas_E - alphas_betas_E_diff
 
-        print("delta fsolve", alphas_betas_E_diff)
+#        print("delta fsolve", alphas_betas_E_diff)
 
 
     sort_indices = np.argsort(alphas_betas_E[0:n_minimax])
@@ -133,7 +133,7 @@ def my_fsolve(extrema_x, alphas_betas_E):
     print("-delta mysolve =", delta)
     print("")
 
-    return alphas_betas_E - delta
+    return alphas_betas_E + delta
 
 def gauss(A):
     n = len(A)

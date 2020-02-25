@@ -120,15 +120,12 @@ def my_fsolve(extrema_x, alphas_betas_E):
         mat_J[:,index_i] = -extrema_x[0:size_problem]*alphas_betas_E[index_i+n_minimax]*np.exp(-extrema_x[0:size_problem]*alphas_betas_E[index_i])
         mat_J[:,index_i+n_minimax] = np.exp(-extrema_x[0:size_problem]*alphas_betas_E[index_i])
 
-    mat_J[-1,0:n_minimax+1] = alphas_betas_E[-1]
-    mat_J[-1,n_minimax+1:2*n_minimax+1] = -alphas_betas_E[-1]
     mat_J[:,-2] = -np.sign(E[0:size_problem])
     mat_J[:,-1] = vec_f[0:size_problem]
 
     print("mat_J[0,:]=", mat_J[0,:])
     print("mat_J[1,:]=", mat_J[1,:])
     print("mat_J[2,:]=", mat_J[2,:])
-#    print("mat_J[3,:]=", mat_J[3,:])
 
     delta = gauss(mat_J)
 

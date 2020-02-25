@@ -38,11 +38,11 @@ def main():
         print("iteration =", i, "E =",  alphas_betas_E[-1])
         print("iteration =", i, "alphas_betas_E =",  alphas_betas_E)
 
-        fig1, (axis1) = pl.subplots(1,1)
-        axis1.set_xlim((0.8,R_minimax))
-        axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_E))
-        axis1.semilogx([0.8,R_minimax], [alphas_betas_E[-1],alphas_betas_E[-1]])
-        axis1.semilogx([0.8,R_minimax], [-alphas_betas_E[-1],-alphas_betas_E[-1]])
+#        fig1, (axis1) = pl.subplots(1,1)
+#        axis1.set_xlim((0.8,R_minimax))
+#        axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_E))
+#        axis1.semilogx([0.8,R_minimax], [alphas_betas_E[-1],alphas_betas_E[-1]])
+#        axis1.semilogx([0.8,R_minimax], [-alphas_betas_E[-1],-alphas_betas_E[-1]])
 
         alphas_betas_E = my_fsolve(extrema_x, alphas_betas_E)
 
@@ -98,8 +98,8 @@ def my_fsolve(extrema_x, alphas_betas_E):
         mat_J[:,index_i+n_minimax] = np.exp(-2*extrema_x*alphas_betas_E[index_i])
 
     mat_J[-1,0:n_minimax+1] = alphas_betas_E[-1]
-    mat_J[-1,n_minimax+1:] = -alphas_betas_E[-1]
-    mat_J[0,:] = vec_f[:]
+    mat_J[-1,n_minimax+1:2*n_minimax+1] = -alphas_betas_E[-1]
+    mat_J[:,-1] = vec_f[:]
 
 #    inv_J = np.linalg.inv(mat_J)
 #    delta = -np.dot(inv_J, vec_f)

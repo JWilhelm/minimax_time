@@ -8,14 +8,20 @@ from numpy import dot, outer
 def main():
     
     # Set parameters
-    n_minimax = 10                     # Number of minimax points
-    R_minimax = int(1E5)              # Range of the minimax approximation
+    n_minimax = 20                     # Number of minimax points
+    R_minimax = int(622)              # Range of the minimax approximation
     n_x       = 8000                   # total number of points on the x-axis for optimization
     eps_diff  = 10**(-10)
 
-    ydata = np.zeros(n_x,dtype=np.float128)
+#    R_increase_method = 'multiply'
+    R_increase_method = 'add'
+    R_add = 5
 
-    alphas_betas_init = np.loadtxt("../alpha_beta_of_N_"+str(n_minimax),dtype=np.float128)
+#    alphas_betas_init = np.loadtxt("../alpha_beta_of_N_"+str(n_minimax),dtype=np.float128)
+    alphas_betas_init = np.loadtxt("alpha_beta_of_N_20_R_0000000000622_E_6.851E-12",dtype=np.float128)
+
+
+    ydata = np.zeros(n_x,dtype=np.float128)
 
     alphas_betas_E = np.append(alphas_betas_init,1)
 
@@ -39,22 +45,14 @@ def main():
               extrema_x = np.append(extrema_x, xdata[argrelextrema(eta_plotting(xdata,alphas_betas_E[0:np.size(alphas_betas_E)-1]), np.less)[0]])
               num_extrema = np.size(extrema_x)
               if(num_extrema < 2*n_minimax+1):
-                  R_minimax = int(R_minimax*1.05)
-              print("")
-              print("number of extrema =", np.size(extrema_x), "Range =", R_minimax)
+                  if(R_increase_method == 'multiply'):
+                      R_minimax = int(R_minimax*1.05)
+                  elif(R_increase_method == 'add'):
+                      R_minimax += R_add
 
            alphas_betas_E[np.size(alphas_betas_E)-1] = np.average(np.abs(eta_plotting(extrema_x,alphas_betas_E[0:np.size(alphas_betas_E)-1])))
            i += 1
-           print("iteration =", i, "E =",  alphas_betas_E[-1])
-   
-           fig1, (axis1) = pl.subplots(1,1)
-           axis1.set_xlim((0.8,R_minimax))
-           axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_E))
-           axis1.semilogx([0.8,R_minimax], [alphas_betas_E[-1],alphas_betas_E[-1]])
-           axis1.semilogx([0.8,R_minimax], [-alphas_betas_E[-1],-alphas_betas_E[-1]])
-           pl.show()
-   
-           alphas_betas_E_diff = alphas_betas_E
+           print("iteration =", i, "E =",  alphas_betas_E[-1], "Range =", R_minimax)
    
            alphas_betas_E = my_fsolve(extrema_x, alphas_betas_E)
    
@@ -65,13 +63,13 @@ def main():
                np.array2string(np.amax(np.abs(eta_plotting(extrema_x,alphas_betas_E))), formatter={'float_kind':lambda x: "%.3E" % x}), \
                np.append(alphas_betas_E[sort_indices],alphas_betas_E[sort_indices+n_minimax]) )
    
-       fig1, (axis1) = pl.subplots(1,1)
-       axis1.set_xlim((0.8,R_minimax))
-       axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_E))
-       axis1.semilogx([0.8,R_minimax], [alphas_betas_E[-1],alphas_betas_E[-1]])
-       axis1.semilogx([0.8,R_minimax], [-alphas_betas_E[-1],-alphas_betas_E[-1]])
-   
-       pl.show()
+#       fig1, (axis1) = pl.subplots(1,1)
+#       axis1.set_xlim((0.8,R_minimax))
+#       axis1.semilogx(xdata,eta_plotting(xdata,alphas_betas_E))
+#       axis1.semilogx([0.8,R_minimax], [alphas_betas_E[-1],alphas_betas_E[-1]])
+#       axis1.semilogx([0.8,R_minimax], [-alphas_betas_E[-1],-alphas_betas_E[-1]])
+#   
+#       pl.show()
 
        R_minimax = int(R_minimax/1.5)
 

@@ -21,25 +21,31 @@ def main():
 
     while True:
 
-       xdata = 10**(np.logspace(0,np.log10(np.log10(R_minimax)+1),n_x,dtype=np.float128))/10
-
        E_old = alphas_betas_E[-1]*2
    
        i = 0
        while (alphas_betas_E[-1]/E_old < 1-eps_diff or alphas_betas_E[-1] > E_old):
-   
+
            E_old = alphas_betas_E[-1]
-           extrema_x = np.append(xdata[0], xdata[argrelextrema(eta_plotting(xdata,alphas_betas_E[0:np.size(alphas_betas_E)-1]), np.greater)[0]])
-           if np.size(extrema_x) == n_minimax: 
-             extrema_x = np.append(extrema_x, xdata[-1])
-           extrema_x = np.append(extrema_x, xdata[argrelextrema(eta_plotting(xdata,alphas_betas_E[0:np.size(alphas_betas_E)-1]), np.less)[0]])
-           print("")
-           print("")
-           print("number of extrema =", np.size(extrema_x))
+           num_extrema = 0
+
+           while num_extrema < 2*n_minimax+1:
+
+              xdata = 10**(np.logspace(0,np.log10(np.log10(R_minimax)+1),n_x,dtype=np.float128))/10
+
+              extrema_x = np.append(xdata[0], xdata[argrelextrema(eta_plotting(xdata,alphas_betas_E[0:np.size(alphas_betas_E)-1]), np.greater)[0]])
+              if np.size(extrema_x) == n_minimax: 
+                 extrema_x = np.append(extrema_x, xdata[-1])
+              extrema_x = np.append(extrema_x, xdata[argrelextrema(eta_plotting(xdata,alphas_betas_E[0:np.size(alphas_betas_E)-1]), np.less)[0]])
+              num_extrema = np.size(extrema_x)
+              if(num_extrema < 2*n_minimax+1):
+                  R_minimax = int(R_minimax*1.05)
+              print("")
+              print("number of extrema =", np.size(extrema_x), "Range =", R_minimax)
+
            alphas_betas_E[np.size(alphas_betas_E)-1] = np.average(np.abs(eta_plotting(extrema_x,alphas_betas_E[0:np.size(alphas_betas_E)-1])))
            i += 1
            print("iteration =", i, "E =",  alphas_betas_E[-1])
-           print("iteration =", i, "alphas_betas_E =",  alphas_betas_E)
    
            fig1, (axis1) = pl.subplots(1,1)
            axis1.set_xlim((0.8,R_minimax))
@@ -67,7 +73,7 @@ def main():
    
        pl.show()
 
-       R_minimax = int(R_minimax/(10**0.2))
+       R_minimax = int(R_minimax/1.5)
 
 def eta(x, *params):
     return 1/x - (np.exp(-outer(x,params[0:np.size(params)//2]))).dot(params[np.size(params)//2:])
@@ -98,14 +104,6 @@ def my_fsolve(extrema_x, alphas_betas_E):
 
     mat_J = np.zeros((size_problem, size_problem+1),dtype=np.float128)
 
-    print("")
-    print("vec_f", vec_f[0:size_problem])
-    print("")
-
-    print("")
-    print("extrema_x", extrema_x[0:size_problem])
-    print("")
-
     for index_i in range(n_minimax):
         mat_J[:,index_i] = -extrema_x[0:size_problem]*alphas_betas_E[index_i+n_minimax]*np.exp(-extrema_x[0:size_problem]*alphas_betas_E[index_i])
         mat_J[:,index_i+n_minimax] = np.exp(-extrema_x[0:size_problem]*alphas_betas_E[index_i])
@@ -113,15 +111,7 @@ def my_fsolve(extrema_x, alphas_betas_E):
     mat_J[:,-2] = np.sign(E[0:size_problem])
     mat_J[:,-1] = vec_f[0:size_problem]
 
-    print("mat_J[0,:]=", mat_J[0,:])
-    print("mat_J[1,:]=", mat_J[1,:])
-    print("mat_J[2,:]=", mat_J[2,:])
-
     delta = gauss(mat_J)
-
-    print("")
-    print("-delta mysolve =", delta)
-    print("")
 
     return alphas_betas_E + delta
 

@@ -8,17 +8,18 @@ from numpy import dot, outer
 def main():
     
     # Set parameters
-    n_minimax = 20                     # Number of minimax points
-    R_minimax = int(622)              # Range of the minimax approximation
-    n_x       = 8000                   # total number of points on the x-axis for optimization
+    n_minimax = 14                     # Number of minimax points
+    R_minimax = int(146)              # Range of the minimax approximation
+    n_x       = 12000                   # total number of points on the x-axis for optimization
     eps_diff  = 10**(-10)
 
 #    R_increase_method = 'multiply'
     R_increase_method = 'add'
-    R_add = 5
+    R_add = 1
+#    R_mult = 1.01
 
 #    alphas_betas_init = np.loadtxt("../alpha_beta_of_N_"+str(n_minimax),dtype=np.float128)
-    alphas_betas_init = np.loadtxt("alpha_beta_of_N_20_R_0000000000622_E_6.851E-12",dtype=np.float128)
+    alphas_betas_init = np.loadtxt("alpha_beta_of_N_14_R_0000000000146_E_4.325E-10",dtype=np.float128)
 
 
     ydata = np.zeros(n_x,dtype=np.float128)
@@ -46,7 +47,7 @@ def main():
               num_extrema = np.size(extrema_x)
               if(num_extrema < 2*n_minimax+1):
                   if(R_increase_method == 'multiply'):
-                      R_minimax = int(R_minimax*1.05)
+                      R_minimax = int(R_minimax*R_mult)
                   elif(R_increase_method == 'add'):
                       R_minimax += R_add
 
@@ -55,6 +56,13 @@ def main():
            print("iteration =", i, "E =",  alphas_betas_E[-1], "Range =", R_minimax)
    
            alphas_betas_E = my_fsolve(extrema_x, alphas_betas_E)
+
+           break_i = False
+           if(i>500): 
+               break_i = True
+               break
+
+
    
        sort_indices = np.argsort(alphas_betas_E[0:n_minimax])
        num_zeros = 13-len(str(R_minimax))
@@ -71,7 +79,10 @@ def main():
 #   
 #       pl.show()
 
-       R_minimax = int(R_minimax/1.5)
+       if(break_i):
+           R_minimax += R_add
+       else:
+           R_minimax = int(R_minimax/1.5)
 
 def eta(x, *params):
     return 1/x - (np.exp(-outer(x,params[0:np.size(params)//2]))).dot(params[np.size(params)//2:])
